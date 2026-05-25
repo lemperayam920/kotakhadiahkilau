@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CHITATO — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<style>
+:root {
+  --orange:#FF6B00;
+  --orange-light:#FF8C2A;
+  --orange-pale:#FFF0E5;
+  --orange-soft:#FFE4CC;
+  --white:#FFFFFF;
+  --off-white:#FAFAF8;
+  --dark:#1A1A1A;
+  --gray:#888;
+  --gray-light:#F2F2F0;
+  --border:#EBEBEB;
+  --success:#22C55E;
+  --danger:#EF4444;
+  --sidebar-w:260px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif;background:var(--off-white);color:var(--dark);display:flex;min-height:100vh;overflow-x:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--dark);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;height:100vh;
+  z-index:200;
+  transition:transform .3s ease;
+}
+.sidebar-logo{
+  padding:28px 24px 20px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.sidebar-logo .brand{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;letter-spacing:3px;color:white;
+}
+.sidebar-logo .brand span{color:var(--orange);}
+.sidebar-logo .sub{font-size:10px;font-weight:600;letter-spacing:3px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:2px;}
+
+.nav-section{padding:20px 16px 8px;font-size:10px;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,.25);text-transform:uppercase;}
+
+.sidebar nav{flex:1;padding:0 12px;display:flex;flex-direction:column;gap:4px;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border-radius:12px;
+  color:rgba(255,255,255,.55);
+  font-size:12px;font-weight:600;letter-spacing:1px;
+  cursor:pointer;transition:all .2s;
+  border:none;background:transparent;width:100%;text-align:left;
+  text-transform:uppercase;
+}
+.nav-item i{width:18px;text-align:center;font-size:14px;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:white;}
+.nav-item.active{background:var(--orange);color:white;}
+.nav-item .badge{
+  margin-left:auto;background:var(--orange);color:white;
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;
+  min-width:20px;text-align:center;
+}
+.nav-item.active .badge{background:rgba(255,255,255,.25);}
+
+.sidebar-bottom{padding:16px 12px;border-top:1px solid rgba(255,255,255,.07);}
+.sidebar-user{display:flex;align-items:center;gap:12px;padding:12px 16px;}
+.user-avatar{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--orange);display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:16px;color:white;
+}
+.user-info .name{font-size:12px;font-weight:700;color:white;}
+.user-info .role{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── TOP BAR ── */
+.topbar{
+  background:white;
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  height:70px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.topbar-left{display:flex;align-items:center;gap:16px;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;}
+.topbar-right{display:flex;align-items:center;gap:20px;}
+
+/* Realtime clock */
+.clock-widget{
+  display:flex;flex-direction:column;align-items:flex-end;
+  padding:8px 16px;background:var(--orange-pale);border-radius:12px;
+}
+.clock-time{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--orange);line-height:1;}
+.clock-date{font-size:10px;font-weight:600;color:var(--gray);letter-spacing:1px;margin-top:2px;}
+
+.hamburger-btn{
+  display:none;background:none;border:none;cursor:pointer;
+  flex-direction:column;gap:5px;padding:4px;
+}
+.hamburger-btn span{width:22px;height:2px;background:var(--dark);border-radius:2px;display:block;transition:.3s;}
+
+/* ── CONTENT AREA ── */
+.content{padding:28px 32px;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:28px;}
+.stat-card{
+  background:white;border-radius:20px;padding:24px;
+  border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,107,0,.1);}
+.stat-card::before{
+  content:'';position:absolute;top:-20px;right:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:var(--orange-pale);
+}
+.stat-card.orange-card{background:var(--orange);}
+.stat-card.orange-card::before{background:rgba(255,255,255,.1);}
+.stat-icon{
+  width:42px;height:42px;border-radius:12px;
+  background:var(--orange-pale);display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-bottom:16px;position:relative;z-index:1;
+}
+.stat-card.orange-card .stat-icon{background:rgba(255,255,255,.2);}
+.stat-label{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;}
+.stat-card.orange-card .stat-label{color:rgba(255,255,255,.7);}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;position:relative;z-index:1;line-height:1;}
+.stat-card.orange-card .stat-value{color:white;}
+.stat-sub{font-size:11px;color:var(--gray);margin-top:4px;position:relative;z-index:1;}
+.stat-card.orange-card .stat-sub{color:rgba(255,255,255,.6);}
+
+/* ── SALES CHART AREA ── */
+.sales-section{background:white;border-radius:20px;border:1px solid var(--border);padding:28px;margin-bottom:28px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;}
+.section-tag{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--orange);text-transform:uppercase;}
+
+.month-tabs{display:flex;gap:8px;flex-wrap:wrap;}
+.month-tab{
+  padding:6px 16px;border-radius:20px;border:1px solid var(--border);
+  background:white;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;transition:.2s;color:var(--gray);
+}
+.month-tab.active,.month-tab:hover{background:var(--orange);border-color:var(--orange);color:white;}
+
+.chart-bars{display:flex;align-items:flex-end;gap:10px;height:160px;padding:0 8px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;}
+.bar{
+  width:100%;border-radius:8px 8px 0 0;background:var(--orange-pale);
+  transition:height .5s cubic-bezier(.25,.8,.25,1),background .2s;
+  position:relative;cursor:pointer;min-height:4px;
+}
+.bar:hover{background:var(--orange);}
+.bar-label{font-size:10px;font-weight:600;color:var(--gray);letter-spacing:1px;}
+.bar-val{font-size:9px;font-weight:700;color:var(--orange);display:none;}
+.bar:hover .bar-val{display:block;}
+
+/* ── SECTION CARD ── */
+.card{background:white;border-radius:20px;border:1px solid var(--border);padding:28px;margin-bottom:28px;}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;}
+.form-grid .full{grid-column:1/-1;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:13px 16px;
+  border:1.5px solid var(--border);border-radius:12px;
+  font-family:'Montserrat',sans-serif;font-size:13px;
+  color:var(--dark);background:white;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.1);
+}
+.field textarea{resize:vertical;min-height:90px;}
+.field input::placeholder,.field textarea::placeholder{color:#CCC;}
+
+.sizes-wrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.sizes-wrap label{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);
+  font-size:12px;font-weight:700;cursor:pointer;transition:.2s;color:var(--gray);
+}
+.sizes-wrap label:hover{border-color:var(--orange);color:var(--orange);}
+.sizes-wrap label:has(input:checked){background:var(--orange);border-color:var(--orange);color:white;}
+.sizes-wrap input[type=checkbox]{display:none;}
+
+/* ── BTN ── */
+.btn-orange{
+  background:var(--orange);color:white;border:none;
+  padding:14px 32px;border-radius:50px;
+  font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;
+  cursor:pointer;transition:all .3s;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-orange:hover{background:var(--dark);transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,107,0,.25);}
+.btn-outline-danger{
+  background:transparent;color:var(--danger);border:1.5px solid var(--danger);
+  padding:8px 18px;border-radius:20px;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;
+  cursor:pointer;transition:.2s;text-transform:uppercase;
+}
+.btn-outline-danger:hover{background:var(--danger);color:white;}
+.btn-sm-orange{
+  background:var(--orange-pale);color:var(--orange);border:none;
+  padding:8px 18px;border-radius:20px;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;
+  cursor:pointer;transition:.2s;text-transform:uppercase;
+}
+.btn-sm-orange:hover{background:var(--orange);color:white;}
+.btn-success{
+  background:#DCFCE7;color:var(--success);border:none;
+  padding:8px 18px;border-radius:20px;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;
+  cursor:pointer;transition:.2s;text-transform:uppercase;
+}
+.btn-success:hover{background:var(--success);color:white;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:2px solid var(--border);}
+th{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gray);text-transform:uppercase;padding:12px 16px;text-align:left;white-space:nowrap;}
+td{padding:16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .15s;}
+tbody tr:hover{background:var(--off-white);}
+
+.prod-thumb{
+  width:48px;height:48px;border-radius:10px;object-fit:cover;
+  background:var(--gray-light);display:block;
+}
+.prod-thumb-placeholder{
+  width:48px;height:48px;border-radius:10px;
+  background:var(--orange-pale);display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.product-cell{display:flex;align-items:center;gap:12px;}
+.product-cell .pname{font-weight:700;font-size:13px;}
+.product-cell .pcat{font-size:11px;color:var(--gray);margin-top:2px;}
+
+.badge-pill{
+  display:inline-block;padding:4px 12px;border-radius:20px;
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+}
+.badge-new{background:#DBEAFE;color:#2563EB;}
+.badge-sale{background:#FEF9C3;color:#CA8A04;}
+.badge-hot{background:#FEE2E2;color:var(--danger);}
+.badge-limited{background:#F3E8FF;color:#9333EA;}
+.badge-none{background:var(--gray-light);color:var(--gray);}
+
+/* Order status badges */
+.status-pill{display:inline-block;padding:5px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.status-new{background:#FFF7ED;color:#EA580C;}
+.status-process{background:#EFF6FF;color:#3B82F6;}
+.status-done{background:#F0FDF4;color:var(--success);}
+
+/* ── ORDERS ── */
+.order-card{
+  background:white;border:1.5px solid var(--border);border-radius:16px;
+  padding:20px;margin-bottom:16px;transition:box-shadow .2s;
+}
+.order-card:hover{box-shadow:0 6px 20px rgba(255,107,0,.1);}
+.order-card.new-order{border-left:4px solid var(--orange);}
+.order-card.done-order{border-left:4px solid var(--success);opacity:.75;}
+.order-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.order-id{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--orange);}
+.order-time{font-size:11px;color:var(--gray);}
+.order-product{font-size:14px;font-weight:700;margin-bottom:4px;}
+.order-detail{font-size:12px;color:var(--gray);}
+.order-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px;}
+.order-price{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--orange);}
+.order-actions{display:flex;gap:8px;}
+
+/* ── EMPTY ── */
+.empty-box{text-align:center;padding:60px 20px;color:var(--gray);}
+.empty-box .icon{font-size:48px;opacity:.2;margin-bottom:12px;}
+.empty-box p{font-size:13px;font-weight:500;letter-spacing:1px;}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;}
+.toast{
+  background:white;border-radius:14px;padding:14px 20px;
+  box-shadow:0 8px 30px rgba(0,0,0,.12);
+  display:flex;align-items:center;gap:12px;
+  min-width:280px;font-size:13px;font-weight:600;
+  animation:toastIn .3s ease;
+  border-left:4px solid var(--orange);
+}
+.toast.success{border-color:var(--success);}
+.toast.error{border-color:var(--danger);}
+@keyframes toastIn{from{transform:translateX(40px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+  z-index:1000;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:20px;padding:32px;max-width:420px;width:100%;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:24px;}
+.modal-actions{display:flex;gap:12px;justify-content:flex-end;}
+.btn-cancel{background:var(--gray-light);color:var(--dark);border:none;padding:12px 24px;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:.2s;}
+.btn-cancel:hover{background:#E0E0E0;}
+.btn-confirm-del{background:var(--danger);color:white;border:none;padding:12px 24px;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:.2s;}
+.btn-confirm-del:hover{background:#C01;}
+
+/* ── PASSWORD MODAL ── */
+.pass-input{
+  width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;
+  font-family:'Montserrat',sans-serif;font-size:14px;outline:none;
+  transition:border-color .2s,box-shadow .2s;margin-bottom:4px;
+}
+.pass-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.1);}
+
+/* ── MOBILE ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay.open{display:block;}
+  .main{margin-left:0;}
+  .hamburger-btn{display:flex;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-grid .full{grid-column:1;}
+  .content{padding:20px 16px;}
+  .topbar{padding:0 16px;}
+}
+@media(max-width:500px){
+  .stats-row{grid-template-columns:1fr;}
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">CHIT<span>A</span>TO</div>
+    <div class="sub">Admin Dashboard</div>
+  </div>
+
+  <div class="nav-section">Menu</div>
+
+  <nav>
+    <button class="nav-item active" data-page="overview">
+      <i class="fas fa-chart-pie"></i> Overview
+    </button>
+    <button class="nav-item" data-page="products">
+      <i class="fas fa-box-open"></i> Produk
+    </button>
+    <button class="nav-item" data-page="orders">
+      <i class="fas fa-shopping-bag"></i> Orderan Masuk
+      <span class="badge" id="orderBadge">0</span>
+    </button>
+    <button class="nav-item" data-page="history">
+      <i class="fas fa-history"></i> History Order
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <div class="name">Admin</div>
+        <div class="role">Chitato Store</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="page-title" id="pageTitle">Overview</div>
+    </div>
+    <div class="topbar-right">
+      <div class="clock-widget">
+        <div class="clock-time" id="clockTime">00:00:00</div>
+        <div class="clock-date" id="clockDate">–</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══ PAGE: OVERVIEW ══ -->
+    <div class="page active" id="page-overview">
+
+      <div class="stats-row">
+        <div class="stat-card orange-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Penjualan Bulan Ini</div>
+          <div class="stat-value" id="statRevenue">Rp 0</div>
+          <div class="stat-sub" id="statRevenueMonth">–</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛍️</div>
+          <div class="stat-label">Total Order</div>
+          <div class="stat-value" id="statOrders">0</div>
+          <div class="stat-sub">Bulan ini</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-label">Total Produk</div>
+          <div class="stat-value" id="statProducts">0</div>
+          <div class="stat-sub">Produk aktif</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-label">Perlu Diproses</div>
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-sub">Order baru</div>
+        </div>
+      </div>
+
+      <!-- Sales Chart -->
+      <div class="sales-section">
+        <div class="section-head">
+          <div>
+            <div class="section-tag">✦ Statistik</div>
+            <div class="section-title">PENJUALAN PER BULAN</div>
+          </div>
+          <div class="month-tabs" id="yearTabs"></div>
+        </div>
+        <div class="chart-bars" id="chartBars"></div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-tag">✦ Terbaru</div>
+            <div class="section-title">ORDER TERBARU</div>
+          </div>
+        </div>
+        <div id="recentOrdersList"></div>
+      </div>
+
+    </div><!-- /overview -->
+
+    <!-- ══ PAGE: PRODUCTS ══ -->
+    <div class="page" id="page-products">
+
+      <!-- Form Tambah -->
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-tag">✦ Manajemen</div>
+            <div class="section-title">TAMBAH PRODUK BARU</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Nama Produk *</label>
+            <input type="text" id="pName" placeholder="Contoh: Jaket Bomber Hitam">
+          </div>
+          <div class="field">
+            <label>Harga (Rp) *</label>
+            <input type="number" id="pPrice" placeholder="250000">
+          </div>
+          <div class="field">
+            <label>Harga Coret (opsional)</label>
+            <input type="number" id="pOldPrice" placeholder="300000">
+          </div>
+          <div class="field">
+            <label>Kategori *</label>
+            <select id="pCat">
+              <option value="">-- Pilih --</option>
+              <option value="Outerwear">Outerwear</option>
+              <option value="T-Shirt">T-Shirt</option>
+              <option value="Sweat Pants">Sweat Pants</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Badge</label>
+            <select id="pBadge">
+              <option value="">Tidak Ada</option>
+              <option value="New">New</option>
+              <option value="Sale">Sale</option>
+              <option value="Hot">Hot</option>
+              <option value="Limited">Limited</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Icon Emoji (jika tanpa foto)</label>
+            <input type="text" id="pIcon" placeholder="👕">
+          </div>
+          <div class="field full">
+            <label>Link Gambar *</label>
+            <input type="text" id="pImage" placeholder="https://...">
+          </div>
+          <div class="field full">
+            <label>Deskripsi Produk</label>
+            <textarea id="pDesc" placeholder="Tulis deskripsi singkat..."></textarea>
+          </div>
+          <div class="field full">
+            <label>Ukuran Tersedia</label>
+            <div class="sizes-wrap">
+              <label><input type="checkbox" value="S"><span>S</span></label>
+              <label><input type="checkbox" value="M"><span>M</span></label>
+              <label><input type="checkbox" value="L"><span>L</span></label>
+              <label><input type="checkbox" value="XL"><span>XL</span></label>
+              <label><input type="checkbox" value="XXL"><span>XXL</span></label>
+              <label><input type="checkbox" value="Free Size"><span>Free Size</span></label>
+            </div>
+          </div>
+        </div>
+        <button class="btn-orange" id="addProductBtn">
+          <i class="fas fa-plus"></i> Tambah Produk
+        </button>
+      </div>
+
+      <!-- Daftar Produk -->
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-tag">✦ Inventori</div>
+            <div class="section-title">DAFTAR PRODUK</div>
+          </div>
+          <div id="productCount" style="font-size:13px;color:var(--gray);font-weight:600;"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Produk</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Badge</th>
+                <th>Ukuran</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr><td colspan="6"><div class="empty-box"><div class="icon">📦</div><p>Loading produk...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /products -->
+
+    <!-- ══ PAGE: ORDERS ══ -->
+    <div class="page" id="page-orders">
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-tag">✦ Real-time</div>
+            <div class="section-title">ORDERAN MASUK</div>
+          </div>
+        </div>
+        <div id="ordersList">
+          <div class="empty-box"><div class="icon">🛍️</div><p>Belum ada order masuk</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: HISTORY ══ -->
+    <div class="page" id="page-history">
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-tag">✦ Arsip</div>
+            <div class="section-title">HISTORY ORDER</div>
+          </div>
+        </div>
+        <div id="historyList">
+          <div class="empty-box"><div class="icon">📋</div><p>Belum ada history</p></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3>Hapus Produk?</h3>
+    <p>Produk ini akan dihapus permanen dari database dan tidak akan muncul di web store.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cancelDelete">Batal</button>
+      <button class="btn-confirm-del" id="confirmDelete">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="modal-overlay" id="passModal">
+  <div class="modal">
+    <h3 id="passModalTitle">Konfirmasi Admin</h3>
+    <p id="passModalDesc">Masukkan password admin untuk melanjutkan.</p>
+    <input type="password" class="pass-input" id="passInput" placeholder="Password admin...">
+    <div style="height:16px"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cancelPass">Batal</button>
+      <button class="btn-orange" id="confirmPass" style="padding:12px 24px;">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, deleteDoc,
+  doc, onSnapshot, updateDoc, query, orderBy, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB-fPBreIXMWsW4c_3Az9E83x3Kgz-SVSc",
+  authDomain: "chitato-store.firebaseapp.com",
+  projectId: "chitato-store",
+  storageBucket: "chitato-store.firebasestorage.app",
+  messagingSenderId: "698109574063",
+  appId: "1:698109574063:web:a7537795e44b9e32f04d5a",
+  measurementId: "G-LT10VQ1K3G"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const ADMIN_PASS = "admin123";
+
+// ── FORMAT ──
+const rupiah = n => new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n);
+const safeText = t => String(t||'').replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const MONTHS = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const MONTHS_FULL = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+
+// ── CLOCK ──
+function updateClock(){
+  const now = new Date();
+  const hh  = String(now.getHours()).padStart(2,'0');
+  const mm  = String(now.getMinutes()).padStart(2,'0');
+  const ss  = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clockTime').textContent = `${hh}:${mm}:${ss}`;
+  document.getElementById('clockDate').textContent =
+    `${now.getDate()} ${MONTHS_FULL[now.getMonth()]} ${now.getFullYear()}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── TOAST ──
+function toast(msg, type='success'){
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'times-circle':'info-circle'}" style="color:${type==='success'?'var(--success)':type==='error'?'var(--danger)':'var(--orange)'}"></i> ${msg}`;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(()=>el.remove(), 3000);
+}
+
+// ── PASSWORD MODAL ──
+let passResolve = null;
+function requirePassword(title='Konfirmasi Admin', desc='Masukkan password admin.'){
+  return new Promise(resolve => {
+    document.getElementById('passModalTitle').textContent = title;
+    document.getElementById('passModalDesc').textContent  = desc;
+    document.getElementById('passInput').value = '';
+    document.getElementById('passModal').classList.add('open');
+    passResolve = resolve;
+  });
+}
+document.getElementById('confirmPass').addEventListener('click', () => {
+  const val = document.getElementById('passInput').value;
+  document.getElementById('passModal').classList.remove('open');
+  if(passResolve){ passResolve(val); passResolve=null; }
+});
+document.getElementById('cancelPass').addEventListener('click', () => {
+  document.getElementById('passModal').classList.remove('open');
+  if(passResolve){ passResolve(null); passResolve=null; }
+});
+
+// ── DELETE MODAL ──
+let deleteResolve = null;
+function confirmDeleteModal(){
+  return new Promise(resolve => {
+    document.getElementById('deleteModal').classList.add('open');
+    deleteResolve = resolve;
+  });
+}
+document.getElementById('confirmDelete').addEventListener('click', () => {
+  document.getElementById('deleteModal').classList.remove('open');
+  if(deleteResolve){ deleteResolve(true); deleteResolve=null; }
+});
+document.getElementById('cancelDelete').addEventListener('click', () => {
+  document.getElementById('deleteModal').classList.remove('open');
+  if(deleteResolve){ deleteResolve(false); deleteResolve=null; }
+});
+
+// ── NAVIGATION ──
+const pageTitles = {overview:'Overview',products:'Manajemen Produk',orders:'Orderan Masuk',history:'History Order'};
+document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-'+btn.dataset.page).classList.add('active');
+    document.getElementById('pageTitle').textContent = pageTitles[btn.dataset.page]||'';
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  });
+});
+
+// hamburger
+document.getElementById('hamburgerBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+});
+
+// ── STATE ──
+let allProducts = {};
+let allOrders   = [];
+
+// ── PRODUCTS LISTENER ──
+onSnapshot(collection(db,'products'), snap => {
+  allProducts = {};
+  snap.forEach(d => { allProducts[d.id] = d.data(); });
+  renderProductsTable();
+  updateStats();
+  document.getElementById('statProducts').textContent = snap.size;
+  document.getElementById('productCount').textContent = snap.size + ' produk';
+});
+
+function renderProductsTable(){
+  const tbody = document.getElementById('productsTableBody');
+  const entries = Object.entries(allProducts);
+  if(!entries.length){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-box"><div class="icon">📦</div><p>Belum ada produk</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = entries.map(([id,p]) => {
+    const imgEl = p.image
+      ? `<img src="${safeText(p.image)}" class="prod-thumb" onerror="this.style.display='none'">`
+      : `<div class="prod-thumb-placeholder">${p.icon||'👕'}</div>`;
+    const badgeClass = p.badge ? `badge-${(p.badge||'').toLowerCase()}` : 'badge-none';
+    const badgeLabel = p.badge || '—';
+    const sizes = (p.sizes||[]).join(', ') || '—';
+    return `<tr>
+      <td>
+        <div class="product-cell">
+          ${imgEl}
+          <div><div class="pname">${safeText(p.name)}</div><div class="pcat">${safeText(p.desc||'').substring(0,40)||'—'}</div></div>
+        </div>
+      </td>
+      <td>${safeText(p.cat||'—')}</td>
+      <td><b>${rupiah(p.price)}</b>${p.oldPrice?`<br><small style="color:#bbb;text-decoration:line-through">${rupiah(p.oldPrice)}</small>`:''}</td>
+      <td><span class="badge-pill ${badgeClass}">${badgeLabel}</span></td>
+      <td style="font-size:12px;color:var(--gray)">${sizes}</td>
+      <td><button class="btn-outline-danger" data-delid="${id}"><i class="fas fa-trash"></i> Hapus</button></td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('[data-delid]').forEach(btn => {
+    btn.addEventListener('click', () => handleDeleteProduct(btn.dataset.delid));
+  });
+}
+
+// ── ADD PRODUCT ──
+document.getElementById('addProductBtn').addEventListener('click', async () => {
+  const pass = await requirePassword('Tambah Produk','Masukkan password admin untuk menambah produk.');
+  if(pass !== ADMIN_PASS){ toast('Password salah!','error'); return; }
+
+  const name     = document.getElementById('pName').value.trim();
+  const price    = document.getElementById('pPrice').value.trim();
+  const oldPrice = document.getElementById('pOldPrice').value.trim();
+  const image    = document.getElementById('pImage').value.trim();
+  const cat      = document.getElementById('pCat').value;
+  const badge    = document.getElementById('pBadge').value;
+  const icon     = document.getElementById('pIcon').value.trim();
+  const desc     = document.getElementById('pDesc').value.trim();
+  const sizes    = [...document.querySelectorAll('.sizes-wrap input:checked')].map(c=>c.value);
+
+  if(!name||!price||!cat){toast('Nama, Harga, dan Kategori wajib diisi!','error');return;}
+
+  const data = {
+    name, price:Number(price), image:image||'', cat,
+    sizes: sizes.length ? sizes : ['S','M','L','XL'],
+    desc:desc||'', icon:icon||'👕', badge:badge||'',
+    createdAt: Date.now()
+  };
+  if(oldPrice) data.oldPrice = Number(oldPrice);
+
+  try{
+    await addDoc(collection(db,'products'), data);
+    toast('Produk berhasil ditambahkan! 🎉');
+    // reset
+    ['pName','pPrice','pOldPrice','pImage','pDesc','pIcon'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pCat').value='';
+    document.getElementById('pBadge').value='';
+    document.querySelectorAll('.sizes-wrap input').forEach(c=>c.checked=false);
+  }catch(e){ toast('Gagal tambah produk: '+e.message,'error'); }
+});
+
+// ── DELETE PRODUCT ──
+async function handleDeleteProduct(id){
+  const confirmed = await confirmDeleteModal();
+  if(!confirmed) return;
+  const pass = await requirePassword('Hapus Produk','Masukkan password admin untuk konfirmasi penghapusan.');
+  if(pass !== ADMIN_PASS){ toast('Password salah!','error'); return; }
+  try{
+    await deleteDoc(doc(db,'products',id));
+    toast('Produk dihapus.');
+  }catch(e){ toast('Gagal hapus: '+e.message,'error'); }
+}
+
+// ── ORDERS LISTENER ──
+onSnapshot(collection(db,'orders'), snap => {
+  allOrders = [];
+  snap.forEach(d => allOrders.push({id:d.id, ...d.data()}));
+  // sort by createdAt desc
+  allOrders.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+  const pending = allOrders.filter(o=>o.status==='new').length;
+  document.getElementById('orderBadge').textContent  = pending;
+  document.getElementById('statPending').textContent = pending;
+
+  renderOrders();
+  renderHistory();
+  renderRecentOrders();
+  updateStats();
+  renderChart();
+});
+
+function timeAgo(ts){
+  if(!ts) return '–';
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff/60000);
+  if(m < 1) return 'Baru saja';
+  if(m < 60) return `${m} menit lalu`;
+  const h = Math.floor(m/60);
+  if(h < 24) return `${h} jam lalu`;
+  return `${Math.floor(h/24)} hari lalu`;
+}
+
+function orderCardHTML(o, showActions=true){
+  const statusMap = {new:'status-new',process:'status-process',done:'status-done'};
+  const statusLabel = {new:'Baru',process:'Diproses',done:'Selesai'};
+  const cls = o.status==='new'?'new-order':o.status==='done'?'done-order':'';
+  const actionsHTML = showActions && o.status!=='done' ? `
+    <div class="order-actions">
+      ${o.status==='new'?`<button class="btn-sm-orange" data-orderid="${o.id}" data-action="process"><i class="fas fa-cog"></i> Proses</button>`:''}
+      <button class="btn-success" data-orderid="${o.id}" data-action="done"><i class="fas fa-check"></i> Selesai</button>
+    </div>` : '';
+  return `<div class="order-card ${cls}">
+    <div class="order-header">
+      <span class="order-id">#${o.id.substring(0,8).toUpperCase()}</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="status-pill ${statusMap[o.status]||'status-new'}">${statusLabel[o.status]||'Baru'}</span>
+        <span class="order-time">${timeAgo(o.createdAt)}</span>
+      </div>
+    </div>
+    <div class="order-product">${safeText(o.product||'–')}</div>
+    <div class="order-detail">
+      ${o.size?`Ukuran: <b>${safeText(o.size)}</b> &nbsp;·&nbsp;`:''} 
+      Customer: <b>${safeText(o.customer||'–')}</b>
+      ${o.phone?` &nbsp;·&nbsp; WA: <b>${safeText(o.phone)}</b>`:''}
+    </div>
+    ${o.note?`<div class="order-detail" style="margin-top:6px">Catatan: ${safeText(o.note)}</div>`:''}
+    <div class="order-footer">
+      <span class="order-price">${o.price?rupiah(o.price):'–'}</span>
+      ${actionsHTML}
+    </div>
+  </div>`;
+}
+
+function renderOrders(){
+  const list = document.getElementById('ordersList');
+  const active = allOrders.filter(o=>o.status!=='done');
+  if(!active.length){
+    list.innerHTML = `<div class="empty-box"><div class="icon">🛍️</div><p>Belum ada order masuk</p></div>`;
+    return;
+  }
+  list.innerHTML = active.map(o=>orderCardHTML(o,true)).join('');
+  attachOrderActions(list);
+}
+
+function renderHistory(){
+  const list = document.getElementById('historyList');
+  const done = allOrders.filter(o=>o.status==='done');
+  if(!done.length){
+    list.innerHTML = `<div class="empty-box"><div class="icon">📋</div><p>Belum ada history</p></div>`;
+    return;
+  }
+  list.innerHTML = done.map(o=>orderCardHTML(o,false)).join('');
+}
+
+function renderRecentOrders(){
+  const list = document.getElementById('recentOrdersList');
+  const recent = allOrders.slice(0,5);
+  if(!recent.length){
+    list.innerHTML = `<div class="empty-box"><div class="icon">🛍️</div><p>Belum ada order</p></div>`;
+    return;
+  }
+  list.innerHTML = recent.map(o=>orderCardHTML(o,true)).join('');
+  attachOrderActions(list);
+}
+
+function attachOrderActions(container){
+  container.querySelectorAll('[data-orderid][data-action]').forEach(btn => {
+    btn.addEventListener('click', () => handleOrderAction(btn.dataset.orderid, btn.dataset.action));
+  });
+}
+
+async function handleOrderAction(id, action){
+  const pass = await requirePassword('Update Order','Masukkan password admin.');
+  if(pass !== ADMIN_PASS){ toast('Password salah!','error'); return; }
+  const statusMap = {process:'process', done:'done'};
+  try{
+    await updateDoc(doc(db,'orders',id),{status: statusMap[action], updatedAt: Date.now()});
+    toast(action==='done' ? 'Order ditandai selesai ✅' : 'Order sedang diproses 🔄');
+  }catch(e){ toast('Gagal update: '+e.message,'error'); }
+}
+
+// ── STATS & CHART ──
+function updateStats(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const thisMonthOrders = allOrders.filter(o=>{
+    const d = new Date(o.createdAt||0);
+    return d.getFullYear()===y && d.getMonth()===m;
+  });
+  const revenue = thisMonthOrders.reduce((s,o)=>s+(o.price||0),0);
+  document.getElementById('statRevenue').textContent = rupiah(revenue);
+  document.getElementById('statRevenueMonth').textContent = MONTHS_FULL[m]+' '+y;
+  document.getElementById('statOrders').textContent = thisMonthOrders.length;
+}
+
+// Chart
+let selectedYear = new Date().getFullYear();
+
+function renderYearTabs(){
+  const years = [...new Set(allOrders.map(o=>new Date(o.createdAt||0).getFullYear()))];
+  const curY = new Date().getFullYear();
+  if(!years.includes(curY)) years.push(curY);
+  years.sort((a,b)=>b-a);
+
+  const tabs = document.getElementById('yearTabs');
+  tabs.innerHTML = years.map(y=>
+    `<button class="month-tab${y===selectedYear?' active':''}" data-year="${y}">${y}</button>`
+  ).join('');
+  tabs.querySelectorAll('.month-tab').forEach(b=>{
+    b.addEventListener('click',()=>{
+      selectedYear = Number(b.dataset.year);
+      renderYearTabs();
+      renderChart();
+    });
+  });
+}
+
+function renderChart(){
+  renderYearTabs();
+  const bars = document.getElementById('chartBars');
+  const monthly = Array(12).fill(0);
+  allOrders.filter(o=>o.status==='done').forEach(o=>{
+    const d = new Date(o.createdAt||0);
+    if(d.getFullYear()===selectedYear) monthly[d.getMonth()] += (o.price||0);
+  });
+  const max = Math.max(...monthly,1);
+  bars.innerHTML = monthly.map((val,i)=>{
+    const pct = Math.round((val/max)*100);
+    return `<div class="bar-wrap">
+      <div class="bar" style="height:${Math.max(pct,4)}%;background:${i===new Date().getMonth()&&selectedYear===new Date().getFullYear()?'var(--orange)':'var(--orange-pale)'}">
+        <span class="bar-val" style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--orange);white-space:nowrap;">${val?rupiah(val):''}</span>
+      </div>
+      <div class="bar-label">${MONTHS[i]}</div>
+    </div>`;
+  }).join('');
+}
+
+// initial render
+renderYearTabs();
+renderChart();
+
+</script>
+</body>
+</html>
